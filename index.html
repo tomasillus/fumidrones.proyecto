@@ -1,1 +1,788 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FumiDrones | Fumigación y Fertilización Agrícola de Precisión</title>
+    
+    <!-- Google Fonts: Montserrat (Títulos) e Inter (Cuerpo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind CSS adaptada con la regla 60-30-10
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        // Color Dominante (60%) -> Neutrales (slate-50 / slate-900)
+                        dom: {
+                            light: '#f8fafc',
+                            dark: '#0f172a',
+                        },
+                        // Color Secundario (30%) -> Verde Agrícola Profundo
+                        sec: {
+                            DEFAULT: '#15803d',
+                            hover: '#166534',
+                            dark: '#064e3b',
+                            card: '#1e293b'
+                        },
+                        // Color Acento (10%) -> Verde Lima de Alta Visibilidad
+                        accent: {
+                            DEFAULT: '#84cc16',
+                            hover: '#65a30d',
+                            light: '#a3e635'
+                        },
+                        // Colores Semánticos de Estado
+                        status: {
+                            success: '#22c55e',
+                            error: '#ef4444',
+                            warning: '#f59e0b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Estilos personalizados y utilidades de accesibilidad */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Animaciones para acordeón y toast */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+        }
+        .accordion-content.open {
+            opacity: 1;
+        }
+        
+        /* Foco visible estandarizado para accesibilidad */
+        :focus-visible {
+            outline: 3px solid #84cc16;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-dom-light text-slate-800 dark:bg-dom-dark dark:text-slate-100 min-h-screen flex flex-col">
 
+    <!-- HEADER & NAVBAR -->
+    <header class="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between" aria-label="Navegación principal">
+            
+            <!-- Logo -->
+            <a href="#inicio" class="flex items-center gap-3 text-2xl font-extrabold text-sec-dark dark:text-white tracking-tight focus:rounded-md">
+                <div class="w-10 h-10 rounded-lg bg-sec flex items-center justify-center text-accent shadow-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </div>
+                <span>Fumi<span class="text-sec dark:text-accent">Drones</span></span>
+            </a>
+
+            <!-- Menú Escritorio -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-semibold">
+                <a href="#inicio" class="text-slate-700 dark:text-slate-200 hover:text-sec dark:hover:text-accent transition-colors">Inicio</a>
+                <a href="#servicios" class="text-slate-700 dark:text-slate-200 hover:text-sec dark:hover:text-accent transition-colors">Servicios</a>
+                <a href="#nosotros" class="text-slate-700 dark:text-slate-200 hover:text-sec dark:hover:text-accent transition-colors">Nosotros</a>
+                <a href="#faq" class="text-slate-700 dark:text-slate-200 hover:text-sec dark:hover:text-accent transition-colors">FAQ / Galería</a>
+                <a href="#contacto" class="text-slate-700 dark:text-slate-200 hover:text-sec dark:hover:text-accent transition-colors">Contacto</a>
+            </div>
+
+            <!-- Botones de Acción (Modo Oscuro + Cotizar) -->
+            <div class="hidden md:flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" type="button" aria-label="Cambiar modo oscuro/claro" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                    <!-- Icono Sol -->
+                    <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                    <!-- Icono Luna -->
+                    <svg id="theme-toggle-dark-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </button>
+
+                <a href="#contacto" class="px-5 py-2.5 rounded-xl bg-sec hover:bg-sec-hover text-white font-semibold text-sm transition-all shadow-md shadow-sec/20 hover:shadow-lg">
+                    Cotizar Ahora
+                </a>
+            </div>
+
+            <!-- Botón Hamburguesa Móvil -->
+            <div class="flex items-center gap-2 md:hidden">
+                <button id="theme-toggle-mobile" type="button" aria-label="Cambiar modo oscuro" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400">
+                    <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+                
+                <button id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú de navegación" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path id="hamburger-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Desplegable Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-6 space-y-3">
+            <a href="#inicio" class="mobile-nav-link block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Inicio</a>
+            <a href="#servicios" class="mobile-nav-link block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Servicios</a>
+            <a href="#nosotros" class="mobile-nav-link block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Nosotros</a>
+            <a href="#faq" class="mobile-nav-link block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">FAQ / Galería</a>
+            <a href="#contacto" class="mobile-nav-link block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Contacto</a>
+            <a href="#contacto" class="mobile-nav-link block w-full text-center px-4 py-3 rounded-xl bg-sec text-white font-bold text-base shadow-md">Solicitar Cotización</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- SECCIÓN HERO -->
+        <section id="inicio" class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Texto Principal -->
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-accent/20 text-sec-dark dark:text-accent border border-accent/40">
+                            <span class="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+                            Tecnología Agrícola de Vanguardia
+                        </span>
+                        
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
+                            Fumigación y Fertilización Agrícola de <span class="text-sec dark:text-accent">Precisión</span>
+                        </h1>
+                        
+                        <p class="text-lg sm:text-xl text-slate-6xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal">
+                            Maximizamos el rendimiento de tus cultivos con pulverización con drones. Reducimos el consumo de agua un 90% y eliminamos el desperdicio de venenos y abonos.
+                        </p>
+                        
+                        <!-- CTA Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                            <a href="#contacto" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-sec hover:bg-sec-hover text-white font-bold text-base shadow-lg shadow-sec/30 transition-all transform hover:-translate-y-0.5 text-center">
+                                Solicitar Cotización
+                            </a>
+                            <a href="#servicios" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-semibold text-base transition-all text-center">
+                                Ver Servicios
+                            </a>
+                        </div>
+
+                        <!-- Indicadores Rápidos -->
+                        <div class="pt-8 border-t border-slate-200 dark:border-slate-800 grid grid-cols-3 gap-4 text-center lg:text-left">
+                            <div>
+                                <p class="text-2xl font-black text-sec dark:text-accent">90%</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Menos agua utilizada</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-black text-sec dark:text-accent">40x</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Más rápido que manual</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-black text-sec dark:text-accent">0%</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Compactación de suelo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imagen Hero / Visual -->
+                    <div class="lg:col-span-5 relative">
+                        <div class="relative mx-auto max-w-md lg:max-w-none rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
+                            <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1000&q=80" 
+                                 alt="Dron de fumigación agrícola sobrevolando un campo de cultivo verde" 
+                                 class="w-full h-[420px] sm:h-[500px] object-cover"
+                                 onerror="this.src='https://placehold.co/800x600/15803d/ffffff?text=FumiDrones+en+Accion'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6">
+                                <div class="text-white">
+                                    <p class="text-xs font-bold uppercase tracking-wider text-accent">Operación en Campo</p>
+                                    <p class="text-lg font-bold">Drones DJI Agras T30 & T40 de Alta Capacidad</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN SERVICIOS -->
+        <section id="servicios" class="py-20 bg-slate-100 dark:bg-slate-800/50 transition-colors">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Nuestros Servicios Agrotecnológicos</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">Ofrecemos soluciones integrales con aeronaves no tripuladas para optimizar insumos y proteger tus cultivos de forma ágil y segura.</p>
+                </div>
+
+                <!-- Grid de Tarjetas de Servicios -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
+                    <!-- Tarjeta 1 -->
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 transition-all hover:-translate-y-2 hover:shadow-xl group flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-xl bg-sec/10 text-sec dark:bg-accent/20 dark:text-accent flex items-center justify-center mb-6 group-hover:bg-sec group-hover:text-white transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Fumigación Ultraprecisa</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Aplicación de venenos, fitosanitarios, fungicidas e insecticidas con gota atomizada. Cobertura uniforme alcanzando el envés de la hoja sin desperdiciar producto.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-semibold text-sec dark:text-accent uppercase tracking-wider">Ahorro en agroquímicos</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 transition-all hover:-translate-y-2 hover:shadow-xl group flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-xl bg-sec/10 text-sec dark:bg-accent/20 dark:text-accent flex items-center justify-center mb-6 group-hover:bg-sec group-hover:text-white transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Fertilización Foliar</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Distribución eficiente de nutrientes líquidos y bioestimulantes directamente en la masa foliar del cultivo, logrando una absorción rápida y efectiva.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-semibold text-sec dark:text-accent uppercase tracking-wider">Nutrición Asimilable</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3 -->
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 transition-all hover:-translate-y-2 hover:shadow-xl group flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-xl bg-sec/10 text-sec dark:bg-accent/20 dark:text-accent flex items-center justify-center mb-6 group-hover:bg-sec group-hover:text-white transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Mapeo Multiespectral</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Escaneo aéreo previa aplicación para identificar zonas de estrés hídrico, plagas o deficiencias nutricionales mediante el índice NDVI.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-semibold text-sec dark:text-accent uppercase tracking-wider">Diagnóstico NDVI</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4 -->
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 transition-all hover:-translate-y-2 hover:shadow-xl group flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-xl bg-sec/10 text-sec dark:bg-accent/20 dark:text-accent flex items-center justify-center mb-6 group-hover:bg-sec group-hover:text-white transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Control Focalizado</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Aplicación selectiva únicamente en focos de plaga o males de vegetación sin necesidad de pulverizar todo el predio indiscriminadamente.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-xs font-semibold text-sec dark:text-accent uppercase tracking-wider">Cero residuo innecesario</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN NOSOTROS -->
+        <section id="nosotros" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    
+                    <div class="space-y-6">
+                        <span class="text-sec dark:text-accent font-bold text-sm uppercase tracking-wider">Sobre FumiDrones</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            Innovación Agrícola Comprometida con la Sostenibilidad
+                        </h2>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            En <strong>FumiDrones</strong> nacimos con la misión de transformar la agricultura tradicional en agricultura de precisión. Combinamos pilotos certificados por las autoridades aeronáuticas con agrónomos expertos para ofrecer servicios de fumigación y fertilización eficientes, limpios y seguros.
+                        </p>
+                        
+                        <div class="space-y-4 pt-2">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-accent/20 text-sec dark:text-accent flex items-center justify-center shrink-0 mt-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white">Seguridad de Operadores</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400">Protegemos a los trabajadores al evitar la exposición directa a agroquímicos peligrosos.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-accent/20 text-sec dark:text-accent flex items-center justify-center shrink-0 mt-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white">Acceso a Terrenos Difíciles</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400">Pulverizamos sin inconvenientes tras días lluviosos, terrenos en pendiente o cultivos de gran altura.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Galería de Fotos del Equipo/Drones -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://images.unsplash.com/photo-1527847263472-aa5338d178b8?auto=format&fit=crop&w=600&q=80" 
+                             alt="Piloto de dron inspeccionando equipo en el campo" 
+                             class="rounded-2xl object-cover h-64 w-full shadow-md"
+                             onerror="this.src='https://placehold.co/600x400/15803d/ffffff?text=Piloto+FumiDrones'">
+                        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
+                             alt="Campo agrícola listo para ser fumigado" 
+                             class="rounded-2xl object-cover h-64 w-full shadow-md mt-8"
+                             onerror="this.src='https://placehold.co/600x400/84cc16/ffffff?text=Cultivos+Tratados'">
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN FAQ Y GALERÍA DE TRABAJOS -->
+        <section id="faq" class="py-20 bg-slate-100 dark:bg-slate-800/50 transition-colors">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="grid lg:grid-cols-12 gap-12">
+                    
+                    <!-- FAQ (Acordeón Component) -->
+                    <div class="lg:col-span-7">
+                        <div class="mb-8">
+                            <span class="text-sec dark:text-accent font-bold text-sm uppercase tracking-wider">Resuelve tus Dudas</span>
+                            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Preguntas Frecuentes</h2>
+                        </div>
+
+                        <div class="space-y-4" id="faq-accordion">
+                            
+                            <!-- Item 1 -->
+                            <div class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                <button type="button" class="accordion-btn w-full px-6 py-4 text-left flex justify-between items-center font-bold text-slate-900 dark:text-white focus:outline-none" aria-expanded="false" aria-controls="faq-answer-1">
+                                    <span>¿Qué productos químicos o abonos se pueden aplicar?</span>
+                                    <svg class="w-5 h-5 text-sec dark:text-accent transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div id="faq-answer-1" class="accordion-content px-6 pb-4 text-slate-600 dark:text-slate-300 text-sm">
+                                    Podemos aplicar casi cualquier producto formulado líquido o soluble: insecticidas, fungicidas, herbicidas selecivos, fertilizantes foliares, bioestimulantes y madurantes.
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                <button type="button" class="accordion-btn w-full px-6 py-4 text-left flex justify-between items-center font-bold text-slate-900 dark:text-white focus:outline-none" aria-expanded="false" aria-controls="faq-answer-2">
+                                    <span>¿Cuántas hectáreas pueden fumigarse por día?</span>
+                                    <svg class="w-5 h-5 text-sec dark:text-accent transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div id="faq-answer-2" class="accordion-content px-6 pb-4 text-slate-600 dark:text-slate-300 text-sm">
+                                    Dependiendo de la topografía del terreno y las condiciones meteorológicas, un equipo con dron puede cubrir entre 40 y 80 hectáreas por jornada operativa continua.
+                                </div>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                <button type="button" class="accordion-btn w-full px-6 py-4 text-left flex justify-between items-center font-bold text-slate-900 dark:text-white focus:outline-none" aria-expanded="false" aria-controls="faq-answer-3">
+                                    <span>¿Es efectivo con viento o lluvia ligera?</span>
+                                    <svg class="w-5 h-5 text-sec dark:text-accent transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div id="faq-answer-3" class="accordion-content px-6 pb-4 text-slate-600 dark:text-slate-300 text-sm">
+                                    Operamos con seguridad en vientos de hasta 15-20 km/h. En caso de lluvia intensa la aplicación se suspende temporalmente para prevenir el lavado del producto en la hoja.
+                                </div>
+                            </div>
+
+                            <!-- Item 4 -->
+                            <div class="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                <button type="button" class="accordion-btn w-full px-6 py-4 text-left flex justify-between items-center font-bold text-slate-900 dark:text-white focus:outline-none" aria-expanded="false" aria-controls="faq-answer-4">
+                                    <span>¿Cómo se realiza la cotización del servicio?</span>
+                                    <svg class="w-5 h-5 text-sec dark:text-accent transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div id="faq-answer-4" class="accordion-content px-6 pb-4 text-slate-600 dark:text-slate-300 text-sm">
+                                    La tarifa se calcula según el total de hectáreas, la ubicación del lote y la cantidad de dosis por hectárea requeridas. Déjanos tus datos en el formulario para una propuesta a la medida.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Galería de Imágenes -->
+                    <div class="lg:col-span-5">
+                        <div class="mb-8">
+                            <span class="text-sec dark:text-accent font-bold text-sm uppercase tracking-wider">Demostración</span>
+                            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Galería en Campo</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="overflow-hidden rounded-xl shadow-md">
+                                <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=500&q=80" 
+                                     alt="Dron rociando cultivo de maíz desde baja altura" 
+                                     class="w-full h-44 object-cover hover:scale-105 transition-transform duration-300"
+                                     onerror="this.src='https://placehold.co/400x300/15803d/ffffff?text=Fumigacion+Maiz'">
+                            </div>
+                            <div class="overflow-hidden rounded-xl shadow-md">
+                                <img src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=500&q=80" 
+                                     alt="Vista aérea de un plantío agrícola ordenado" 
+                                     class="w-full h-44 object-cover hover:scale-105 transition-transform duration-300"
+                                     onerror="this.src='https://placehold.co/400x300/84cc16/ffffff?text=Vista+Aerea'">
+                            </div>
+                            <div class="overflow-hidden rounded-xl shadow-md">
+                                <img src="https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=500&q=80" 
+                                     alt="Tanque de recarga de agroquímicos del dron" 
+                                     class="w-full h-44 object-cover hover:scale-105 transition-transform duration-300"
+                                     onerror="this.src='https://placehold.co/400x300/0f172a/ffffff?text=Tanque+Dron'">
+                            </div>
+                            <div class="overflow-hidden rounded-xl shadow-md">
+                                <img src="https://images.unsplash.com/photo-1530507629858-e4977d30e9e0?auto=format&fit=crop&w=500&q=80" 
+                                     alt="Agrónomo revisando mapa de vuelo en tablet" 
+                                     class="w-full h-44 object-cover hover:scale-105 transition-transform duration-300"
+                                     onerror="this.src='https://placehold.co/400x300/166534/ffffff?text=Planificacion'">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN FORMULARIO DE CONTACTO -->
+        <section id="contacto" class="py-20">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 sm:p-12">
+                    
+                    <div class="text-center max-w-xl mx-auto mb-10">
+                        <span class="text-sec dark:text-accent font-bold text-sm uppercase tracking-wider">Hablemos</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-1">Solicita Tu Cotización</h2>
+                        <p class="mt-2 text-slate-600 dark:text-slate-400 text-sm">Completa el formulario y te contactaremos en menos de 24 horas hábiles.</p>
+                    </div>
+
+                    <form id="contact-form" novalidate class="space-y-6">
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Nombre Completo -->
+                            <div>
+                                <label for="nombre" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Nombre Completo *</label>
+                                <input type="text" id="nombre" name="nombre" required 
+                                       placeholder="Ej. Carlos Mendoza" 
+                                       class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors focus:ring-2 focus:ring-accent focus:border-transparent">
+                                <span id="error-nombre" class="hidden text-xs text-status-error font-medium mt-1">Por favor ingresa tu nombre completo.</span>
+                            </div>
+
+                            <!-- Correo Electrónico -->
+                            <div>
+                                <label for="email" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Correo Electrónico *</label>
+                                <input type="email" id="email" name="email" required 
+                                       placeholder="ejemplo@agricola.com" 
+                                       class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors focus:ring-2 focus:ring-accent focus:border-transparent">
+                                <span id="error-email" class="hidden text-xs text-status-error font-medium mt-1">Ingresa un correo electrónico válido (ej. usuario@dominio.com).</span>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Teléfono -->
+                            <div>
+                                <label for="telefono" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Teléfono / WhatsApp *</label>
+                                <input type="tel" id="telefono" name="telefono" required 
+                                       placeholder="+57 300 123 4567" 
+                                       class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors focus:ring-2 focus:ring-accent focus:border-transparent">
+                                <span id="error-telefono" class="hidden text-xs text-status-error font-medium mt-1">Ingresa un número telefónico válido.</span>
+                            </div>
+
+                            <!-- Tipo de Cultivo / Hectáreas -->
+                            <div>
+                                <label for="cultivo" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Cultivo y Hectáreas Aproximadas *</label>
+                                <input type="text" id="cultivo" name="cultivo" required 
+                                       placeholder="Ej. Arroz - 50 Hectáreas" 
+                                       class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors focus:ring-2 focus:ring-accent focus:border-transparent">
+                                <span id="error-cultivo" class="hidden text-xs text-status-error font-medium mt-1">Especifica el tipo de cultivo y extensión.</span>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje -->
+                        <div>
+                            <label for="mensaje" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Mensaje o Detalles del Servicio *</label>
+                            <textarea id="mensaje" name="mensaje" rows="4" required 
+                                      placeholder="Cuéntanos qué producto necesitas aplicar (abono, veneno/insecticida) y la ubicación aproximada del predio..." 
+                                      class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors focus:ring-2 focus:ring-accent focus:border-transparent"></textarea>
+                            <span id="error-mensaje" class="hidden text-xs text-status-error font-medium mt-1">Escribe los detalles de tu consulta.</span>
+                        </div>
+
+                        <!-- Botón Enviar -->
+                        <button type="submit" class="w-full py-4 px-8 rounded-xl bg-sec hover:bg-sec-hover text-white font-bold text-base transition-all shadow-lg shadow-sec/30 flex justify-center items-center gap-2">
+                            <span>Enviar Solicitud de Cotización</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3 text-2xl font-extrabold text-white">
+                        <div class="w-8 h-8 rounded-lg bg-sec flex items-center justify-center text-accent">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </div>
+                        <span>Fumi<span class="text-accent">Drones</span></span>
+                    </div>
+                    <p class="text-sm max-w-sm">Servicios profesionales de fumigación, pulverización y fertilización agrícola con tecnología de drones autónomos de alta precisión.</p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Navegación</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#inicio" class="hover:text-accent transition-colors">Inicio</a></li>
+                        <li><a href="#servicios" class="hover:text-accent transition-colors">Servicios</a></li>
+                        <li><a href="#nosotros" class="hover:text-accent transition-colors">Nosotros</a></li>
+                        <li><a href="#faq" class="hover:text-accent transition-colors">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Contacto</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>📍 Zona Agrícola y Predios Rurales</li>
+                        <li>📞 +57 (300) 123-4567</li>
+                        <li>✉️ contacto@fumidrones.com</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p>&copy; <span id="year"></span> FumiDrones. Todos los derechos reservados.</p>
+                <p>Diseño Web Agrícola de Precisión</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST DE NOTIFICACIÓN ENVIADO CON ÉXITO -->
+    <div id="toast-success" class="fixed bottom-5 right-5 z-50 flex items-center gap-3 p-4 bg-slate-900 text-white rounded-2xl shadow-2xl border border-status-success hidden transform transition-all duration-300 translate-y-10 opacity-0 max-w-md" role="alert">
+        <div class="w-10 h-10 rounded-xl bg-status-success/20 text-status-success flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm text-white">¡Mensaje enviado con éxito!</h4>
+            <p class="text-xs text-slate-300">Nos pondremos en contacto pronto para evaluar tu cultivo.</p>
+        </div>
+        <button id="toast-close" type="button" aria-label="Cerrar notificación" class="ml-auto text-slate-400 hover:text-white p-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+
+    <!-- JAVASCRIPT PURO / VANILLA -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Dinámico para Año de Copyright
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // 2. MODO OSCURO (Dark Mode Toggle)
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+
+            // Comprobar preferencia previa o preferencia del sistema
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                lightIcon?.classList.remove('hidden');
+                darkIcon?.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                lightIcon?.classList.add('hidden');
+                darkIcon?.classList.remove('hidden');
+            }
+
+            function toggleTheme() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                    lightIcon?.classList.add('hidden');
+                    darkIcon?.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                    lightIcon?.classList.remove('hidden');
+                    darkIcon?.classList.add('hidden');
+                }
+            }
+
+            themeToggleBtn?.addEventListener('click', toggleTheme);
+            themeToggleMobile?.addEventListener('click', toggleTheme);
+
+
+            // 3. MENÚ HAMBURGUESA MÓVIL
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+            mobileMenuBtn?.addEventListener('click', () => {
+                const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+                mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+
+            // 4. COMPONENTE ACORDEÓN (FAQ)
+            const accordionButtons = document.querySelectorAll('.accordion-btn');
+
+            accordionButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.nextElementSibling;
+                    const icon = btn.querySelector('svg');
+                    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+                    // Cerrar todos los demás
+                    accordionButtons.forEach(otherBtn => {
+                        if (otherBtn !== btn) {
+                            otherBtn.setAttribute('aria-expanded', 'false');
+                            const otherContent = otherBtn.nextElementSibling;
+                            const otherIcon = otherBtn.querySelector('svg');
+                            otherContent.style.maxHeight = null;
+                            otherContent.classList.remove('open');
+                            otherIcon?.classList.remove('rotate-180');
+                        }
+                    });
+
+                    // Abrir o cerrar el actual
+                    if (isExpanded) {
+                        btn.setAttribute('aria-expanded', 'false');
+                        content.style.maxHeight = null;
+                        content.classList.remove('open');
+                        icon?.classList.remove('rotate-180');
+                    } else {
+                        btn.setAttribute('aria-expanded', 'true');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.classList.add('open');
+                        icon?.classList.add('rotate-180');
+                    }
+                });
+            });
+
+
+            // 5. VALIDACIÓN DEL FORMULARIO DE CONTACTO
+            const form = document.getElementById('contact-form');
+            const toast = document.getElementById('toast-success');
+            const toastClose = document.getElementById('toast-close');
+
+            const fields = [
+                { id: 'nombre', errorId: 'error-nombre', validate: val => val.trim() !== '' },
+                { id: 'email', errorId: 'error-email', validate: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim()) },
+                { id: 'telefono', errorId: 'error-telefono', validate: val => val.trim().length >= 7 },
+                { id: 'cultivo', errorId: 'error-cultivo', validate: val => val.trim() !== '' },
+                { id: 'mensaje', errorId: 'error-mensaje', validate: val => val.trim() !== '' }
+            ];
+
+            // Validación en tiempo real al escribir o perder el foco
+            fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const errorSpan = document.getElementById(field.errorId);
+
+                const validateField = () => {
+                    if (!field.validate(input.value)) {
+                        input.classList.add('border-status-error');
+                        input.classList.remove('border-slate-300', 'dark:border-slate-700');
+                        errorSpan.classList.remove('hidden');
+                        return false;
+                    } else {
+                        input.classList.remove('border-status-error');
+                        input.classList.add('border-slate-300', 'dark:border-slate-700');
+                        errorSpan.classList.add('hidden');
+                        return true;
+                    }
+                };
+
+                input.addEventListener('blur', validateField);
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('border-status-error')) {
+                        validateField();
+                    }
+                });
+            });
+
+            // Envío del formulario
+            form?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let isValid = true;
+
+                fields.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    const errorSpan = document.getElementById(field.errorId);
+
+                    if (!field.validate(input.value)) {
+                        input.classList.add('border-status-error');
+                        errorSpan.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('border-status-error');
+                        errorSpan.classList.add('hidden');
+                    }
+                });
+
+                if (isValid) {
+                    // Mostrar Toast de éxito
+                    showToast();
+                    form.reset();
+                }
+            });
+
+            // Función para mostrar Toast
+            function showToast() {
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+
+                // Auto-ocultar tras 5 segundos
+                setTimeout(hideToast, 5000);
+            }
+
+            function hideToast() {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 300);
+            }
+
+            toastClose?.addEventListener('click', hideToast);
+        });
+    </script>
+</body>
+</html>
